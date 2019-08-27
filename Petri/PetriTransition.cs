@@ -8,9 +8,15 @@ namespace Petri
 {
     class PetriTransition
     {
-
+        public int id;
+        public string name;
         public List<PetriConnection> inputs;
         public List<PetriConnection> outputs;
+
+        public PetriTransition(int transId,string transName)
+        {
+            id = transId; name = transName;
+        }
 
     }
 }

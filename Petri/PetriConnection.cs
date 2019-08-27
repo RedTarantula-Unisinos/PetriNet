@@ -10,8 +10,8 @@ namespace Petri
         public enum ConnectionType
         {
             Normal,
-            Inhibitor,
-            Reset
+            Inhibitor, // If there's a token, the transition's not available
+            Reset // Clears all tokens when activated
         }
 
     class PetriConnection
