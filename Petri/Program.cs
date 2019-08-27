@@ -17,6 +17,10 @@ namespace Petri
             while (exit == false)
             {
                 Console.Clear();
+                if (p.listStr != "")
+                {
+                    Console.Write(p.listStr + "\n");
+                }
                 Console.WriteLine("=====");
                 Console.WriteLine("POSSIBLE ACTIONS: ");
                 Console.WriteLine("CreateSlot: Creates a new slot; Alias: cs");
@@ -26,14 +30,17 @@ namespace Petri
                 Console.WriteLine("CreateConnectionSlotToTransition: Connects slot to a transition; Alias: ccst");
                 Console.WriteLine("CreateConnectionTransitionToSlot: Connects a transition to a slot; Alias: ccts");
                 Console.WriteLine("ListConnections: Lists all existing connections; Alias: lc");
+                Console.WriteLine("ListAll: Lists everything; Alias: l");
                 Console.WriteLine("Exit: Exits the program; Alias: x");
                 Console.WriteLine("=====");
                 Console.WriteLine("HISTORY\n");
                 for (int i = 0 ; i < p.log.ToArray().Length ; i++)
                 {
-                    Console.WriteLine(p.log[i]);
+                    Console.WriteLine(i+1 + ": " + p.log[i]);
                 }
                 Console.WriteLine("=====");
+
+                p.listStr = "";
 
                 Console.Write("Command: ");
                 string input;
@@ -50,7 +57,7 @@ namespace Petri
                     p.CreateTransitionLoop();
                 else if (input == "listtransitions" || input == "lt")
                     p.ListTransitions();
-                
+
                 else if (input == "createconnectionslottotransition" || input == "ccst")
                     p.CreateConnectionSTLoop();
                 else if (input == "createconnectiontransitiontoslot" || input == "ccts")
@@ -58,8 +65,18 @@ namespace Petri
                 else if (input == "listconnections" || input == "lc")
                     p.ListConnections();
 
+                else if (input == "listall" || input == "l")
+                {
+                    p.ListSlots();
+                    p.ListTransitions();
+                    p.ListConnections();
+                }
+
                 else if (input == "exit" || input == "x")
                     exit = true;
+
+                else
+                    p.listStr = "(!)INVALID COMMAND(!)";
                 
             }
         }

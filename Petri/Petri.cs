@@ -11,17 +11,18 @@ namespace Petri
     {
 
         public List<string> log;
+        public string listStr;
         private List<PetriSlot> slotsList;
         private List<PetriConnection> connectionsList;
         private List<PetriTransition> transitionsList;
 
-        public Petri()
+        public Petri() // Constructor
         {
             slotsList = new List<PetriSlot>();
             connectionsList = new List<PetriConnection>();
             transitionsList = new List<PetriTransition>();
             log = new List<string>();
-
+            listStr = "";
         }
         
         public void UpdateLogs(string _log)
@@ -33,40 +34,8 @@ namespace Petri
             log.Add(_log);
         }
 
-        public void CreateSlotLoop()
-        {
-            Console.Write("Slot's name: ");
-            string name = Console.ReadLine();
-            CreateSlot(name);
-            int id = slotsList.ToArray().Length - 1;
-            Console.Write("How many tokens?");
-            int tokens = -1;
-            Int32.TryParse(Console.ReadLine(),out tokens);
-            if(tokens >=0)
-            {
-                AddTokensToSlot(id,tokens);
-            }
-
-            log.Enqueue
-        }
-        
-        internal void CreateTransitionLoop()
-        {
-            Console.Write("Transition's name: ");
-            string name = Console.ReadLine();
-            CreateTransition(name);
-        }
-
-        
-        
-        public void CreateSlot(string slotName)
-        {
-            PetriSlot s = new PetriSlot(slotsList.ToArray().Length,slotName);
-            slotsList.Add(s);
-            Console.WriteLine("Created Slot: " + s.name + " with ID " + s.id);
-        }
-
-        internal void ListConnections()
+        #region LISTING
+        public void ListConnections()
         {
             foreach (PetriConnection c in connectionsList)
             {
@@ -75,16 +44,38 @@ namespace Petri
 
                 if (c.output)
                 {
-                    Console.WriteLine(c.id + " - " + "from the transition [" + trans.name + "(" + trans.id + ")" + "] to the slot [" + slot.name + "(" + slot.id + ")]");
+                    listStr += "Connection " + c.id + ": " + "From the transition [" + trans.name + "(" + trans.id + ")" + "] to the slot [" + slot.name + "(" + slot.id + ")]; " + "Weight: " + c.weight + "\n";
+                    Console.WriteLine("Connection " + c.id + ": " + "From the transition [" + trans.name + "(" + trans.id + ")" + "] to the slot [" + slot.name + "(" + slot.id + ")]; " + "Weight: " + c.weight + "\n");
                 }
                 else
                 {
-                    Console.WriteLine(c.id + " - " + "from the slot [" + slot.name + "(" + slot.id + ")" + "] to the transition [" + trans.name + "(" + trans.id + ")]");
+                    listStr += "Connection " + c.id + ": " + "From the slot [" + slot.name + "(" + slot.id + ")" + "] to the transition [" + trans.name + "(" + trans.id + ")]; " + "Weight: " + c.weight + "\n";
+                    Console.WriteLine("Connection " + c.id + ": " + "From the slot [" + slot.name + "(" + slot.id + ")" + "] to the transition [" + trans.name + "(" + trans.id + ")]; " + "Weight: " + c.weight + "\n");
                 }
             }
         }
+        public void ListSlots()
+        {
+            Console.WriteLine("LIST OF SLOTS:");
+            foreach (PetriSlot s in slotsList)
+            {
+                listStr += "Slot " + s.id + ": " + s.name + " - Contains " + s.tokens + " tokens;" + "\n";
+                Console.WriteLine("Slot " + s.id + ": " + s.name + " - Contains " + s.tokens + " tokens;");
+            }
+        }
+        public void ListTransitions()
+        {
+            Console.WriteLine("LIST OF TRANSITIONS:");
+            foreach (PetriTransition t in transitionsList)
+            {
+                listStr += "Transition " + t.id + " - " + t.name + "\n";
+                Console.WriteLine("Transition " + t.id + ": " + t.name);
+            }
+        }
+        #endregion
 
-        internal void CreateConnectionSTLoop()
+        #region CREATING
+        public void CreateConnectionSTLoop()
         {
             int slotID = 0;
             int transID = 0;
@@ -164,11 +155,18 @@ namespace Petri
                 }
             }
 
-            PetriConnection c = new PetriConnection(connectionsList.ToArray().Length-1,slotID,transID,false,weight,type);
+            PetriConnection c = new PetriConnection(connectionsList.ToArray().Length,slotID,transID,false,weight,type);
             transitionsList[transID].inputs.Add(c);
             connectionsList.Add(c);
+
+            
+            PetriTransition trans = transitionsList[transID];
+            PetriSlot slot = slotsList[slotID];
+            string l = "Created a connection from the slot [" + slot.name + "(" + slot.id + ")" + "] to the transition [" + trans.name + "(" + trans.id + ")]" + "Id: " + c.id;;
+            UpdateLogs(l);
+            listStr = "";
         }
-        internal void CreateConnectionTSLoop()
+        public void CreateConnectionTSLoop()
         {
             int slotID = 0;
             int transID = 0;
@@ -210,37 +208,59 @@ namespace Petri
                 weight = 1;
                 return;
             }
-            PetriConnection c = new PetriConnection(connectionsList.ToArray().Length-1,slotID,transID,true,weight,type);
+
+
+
+            PetriConnection c = new PetriConnection(connectionsList.ToArray().Length,slotID,transID,true,weight,type);
             transitionsList[transID].outputs.Add(c);
             connectionsList.Add(c);
-        }
 
-        public void CreateTransition(string transName)
+            PetriTransition trans = transitionsList[transID];
+            PetriSlot slot = slotsList[slotID];
+            string l = "Created a connection from the transition [" + trans.name + "(" + trans.id + ")" + "] to the slot [" + slot.name + "(" + slot.id + ")]" + "Id: " + c.id;
+            UpdateLogs(l);
+            listStr = "";
+
+        }
+        public void CreateSlotLoop()
         {
-            PetriTransition t = new PetriTransition(transitionsList.ToArray().Length,transName);
+            Console.Write("Slot's name: ");
+            string name = Console.ReadLine();
+
+
+            PetriSlot s = new PetriSlot(slotsList.ToArray().Length,name);
+            slotsList.Add(s);
+            Console.WriteLine("Created Slot: " + s.name + " with ID " + s.id);
+
+
+            int id = slotsList.ToArray().Length - 1;
+            Console.Write("How many tokens?");
+            int tokens = -1;
+            Int32.TryParse(Console.ReadLine(),out tokens);
+            if (tokens >= 0)
+            {
+                AddTokensToSlot(id,tokens);
+            }
+
+
+
+            string l = "Created a slot. Id: " + id + "; Name: " + name + "; Tokens: " + tokens + ";";
+            UpdateLogs(l);
+        }
+        public void CreateTransitionLoop()
+        {
+            Console.Write("Transition's name: ");
+            string name = Console.ReadLine();
+            
+            PetriTransition t = new PetriTransition(transitionsList.ToArray().Length,name);
             transitionsList.Add(t);
-            Console.WriteLine("Created Transition: " + t.name + " with ID " + t.id);
+            
+            string l = "Created a transition. Id: " + (transitionsList.ToArray().Length-1) + "; Name: " + name + ";";
+            UpdateLogs(l);
         }
+        #endregion
 
-        
-        public void ListSlots()
-        {
-            Console.WriteLine("LIST OF SLOTS:");
-            foreach (PetriSlot s in slotsList)
-            {
-                Console.WriteLine(s.id + " - " + s.name + " - Contains " + s.tokens + " tokens;");
-            }
-        }
-
-        public void ListTransitions()
-        {
-            Console.WriteLine("LIST OF TRANSITIONS:");
-            foreach (PetriTransition t in transitionsList)
-            {
-                Console.WriteLine(t.id + " - " + t.name);
-            }
-        }
-        
+        #region TOKENS
         public void AddTokensToSlot(int slotID, int tokensAmount)
         {
             slotsList[slotID].AddTokens(tokensAmount);
@@ -249,6 +269,6 @@ namespace Petri
         {
             slotsList[slotID].RemoveTokens(tokensAmount);
         }
-
+        #endregion
     }
 }
