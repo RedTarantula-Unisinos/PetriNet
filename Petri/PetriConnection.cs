@@ -16,21 +16,23 @@ namespace Petri
 
     class PetriConnection
     {
-        
 
-        public PetriSlot s;
-            public PetriTransition t;
-            public int weight;
-            public ConnectionType type;
-            bool output;
+        public int id;
+        public int s;
+        public int t;
+        public int weight;
+        public ConnectionType type;
+        public bool output;
 
-            public PetriConnection(PetriSlot slot, PetriTransition transition, bool isOutput, int connectionWeight = 1, ConnectionType connectionType = ConnectionType.Normal)
-            {
-                s = slot; t = transition;
-                weight = connectionWeight;
-                type = connectionType;
-                output = isOutput;
-            }
+        public PetriConnection(int slotID,int slot,int transition,bool isOutput,int connectionWeight = 1,ConnectionType connectionType = ConnectionType.Normal)
+        {
+            id = slotID;
+            s = slot;
+            t = transition;
+            weight = connectionWeight;
+            type = connectionType;
+            output = isOutput;
+        }
 
     }
 }

@@ -10,7 +10,7 @@ namespace Petri
     class Petri
     {
 
-        
+        public List<string> log;
         private List<PetriSlot> slotsList;
         private List<PetriConnection> connectionsList;
         private List<PetriTransition> transitionsList;
@@ -20,33 +20,39 @@ namespace Petri
             slotsList = new List<PetriSlot>();
             connectionsList = new List<PetriConnection>();
             transitionsList = new List<PetriTransition>();
+            log = new List<string>();
 
         }
         
+        public void UpdateLogs(string _log)
+        {
+            if (log.ToArray().Length == 3)
+            {
+                log.RemoveAt(0);
+            }
+            log.Add(_log);
+        }
 
         public void CreateSlotLoop()
         {
-            Console.WriteLine("Pick a name for the slot");
+            Console.Write("Slot's name: ");
             string name = Console.ReadLine();
             CreateSlot(name);
             int id = slotsList.ToArray().Length - 1;
-            Console.WriteLine("How many tokens?");
+            Console.Write("How many tokens?");
             int tokens = -1;
             Int32.TryParse(Console.ReadLine(),out tokens);
             if(tokens >=0)
             {
-                Console.WriteLine("Giving " + tokens + " token(s) to the slot");
                 AddTokensToSlot(id,tokens);
             }
-            else
-            {
-                Console.WriteLine("Failed reading tokens amount, giving 0 tokens to the slot");
-            }
+
+            log.Enqueue
         }
         
         internal void CreateTransitionLoop()
         {
-            Console.WriteLine("Pick a name for the transition");
+            Console.Write("Transition's name: ");
             string name = Console.ReadLine();
             CreateTransition(name);
         }
@@ -58,6 +64,155 @@ namespace Petri
             PetriSlot s = new PetriSlot(slotsList.ToArray().Length,slotName);
             slotsList.Add(s);
             Console.WriteLine("Created Slot: " + s.name + " with ID " + s.id);
+        }
+
+        internal void ListConnections()
+        {
+            foreach (PetriConnection c in connectionsList)
+            {
+                PetriSlot slot = slotsList[c.s];
+                PetriTransition trans = transitionsList[c.t];
+
+                if (c.output)
+                {
+                    Console.WriteLine(c.id + " - " + "from the transition [" + trans.name + "(" + trans.id + ")" + "] to the slot [" + slot.name + "(" + slot.id + ")]");
+                }
+                else
+                {
+                    Console.WriteLine(c.id + " - " + "from the slot [" + slot.name + "(" + slot.id + ")" + "] to the transition [" + trans.name + "(" + trans.id + ")]");
+                }
+            }
+        }
+
+        internal void CreateConnectionSTLoop()
+        {
+            int slotID = 0;
+            int transID = 0;
+            int weight = 1;
+            string inputType;
+            ConnectionType type = ConnectionType.Normal;
+
+            Console.WriteLine("=====");
+            ListSlots();
+            Console.WriteLine("=====");
+
+            Console.Write("Slot's ID: ");
+            Int32.TryParse(Console.ReadLine(),out slotID);
+
+            if (slotID < 0)
+            {
+                Console.WriteLine("Failed");
+                return;
+            }
+
+
+            Console.WriteLine("=====");
+            ListTransitions();
+            Console.WriteLine("=====");
+
+            Console.Write("Transition's ID: ");
+            Int32.TryParse(Console.ReadLine(),out transID);
+
+            if (transID < 0)
+            {
+                Console.WriteLine("Failed");
+                return;
+            }
+
+            Console.Write("Connection's Weight: ");
+            Int32.TryParse(Console.ReadLine(),out weight);
+
+            if (weight < 0)
+            {
+                Console.WriteLine("Forcing value of 1 to the connection");
+                weight = 1;
+                return;
+            }
+
+            Console.WriteLine("=====");
+            Console.WriteLine("Possible Types: ");
+            Console.WriteLine("- Normal");
+            Console.WriteLine("- Inhibitor");
+            Console.WriteLine("- Reset");
+            Console.WriteLine("=====");
+
+            bool acceptable = false;
+
+            while (!acceptable)
+            {
+                Console.Write("Connection Type: ");
+                inputType = Console.ReadLine().ToLower();
+
+                if (inputType == "normal" || inputType == "n")
+                {
+                    type = ConnectionType.Normal;
+                    acceptable = true;
+                }
+                else if (inputType == "inhibitor" || inputType == "i")
+                {
+                    type = ConnectionType.Inhibitor;
+                    acceptable = true;
+                }
+                else if (inputType == "reset" || inputType == "r")
+                {
+                    type = ConnectionType.Reset;
+                    acceptable = true;
+                }
+                else
+                {
+                    Console.WriteLine("Incorrect type");
+                }
+            }
+
+            PetriConnection c = new PetriConnection(connectionsList.ToArray().Length-1,slotID,transID,false,weight,type);
+            transitionsList[transID].inputs.Add(c);
+            connectionsList.Add(c);
+        }
+        internal void CreateConnectionTSLoop()
+        {
+            int slotID = 0;
+            int transID = 0;
+            int weight = 1;
+            ConnectionType type = ConnectionType.Normal;
+
+            Console.WriteLine("=====");
+            ListTransitions();
+            Console.WriteLine("=====");
+
+            Console.Write("Transition's ID: ");
+            Int32.TryParse(Console.ReadLine(),out transID);
+
+            if (transID < 0)
+            {
+                Console.WriteLine("Failed");
+                return;
+            }
+
+            Console.WriteLine("=====");
+            ListSlots();
+            Console.WriteLine("=====");
+
+            Console.Write("Slot's ID: ");
+            Int32.TryParse(Console.ReadLine(),out slotID);
+
+            if (slotID < 0)
+            {
+                Console.WriteLine("Failed");
+                return;
+            }
+
+            Console.Write("Connection's Weight: ");
+            Int32.TryParse(Console.ReadLine(),out weight);
+
+            if (weight < 0)
+            {
+                Console.WriteLine("Forcing value of 1 to the connection");
+                weight = 1;
+                return;
+            }
+            PetriConnection c = new PetriConnection(connectionsList.ToArray().Length-1,slotID,transID,true,weight,type);
+            transitionsList[transID].outputs.Add(c);
+            connectionsList.Add(c);
         }
 
         public void CreateTransition(string transName)
@@ -84,21 +239,6 @@ namespace Petri
             {
                 Console.WriteLine(t.id + " - " + t.name);
             }
-        }
-
-        public void ConnectSlotTrans(int slotID, int transitionID,int weight = 1, ConnectionType type= ConnectionType.Normal)
-        {
-            PetriConnection c = new PetriConnection(slotsList[slotID],transitionsList[transitionID],false,weight,type);
-            transitionsList[transitionID].inputs.Add(c);
-            connectionsList.Add(c);
-
-        }
-
-        public void ConnectTransSlot(int transitionID, int slotID,int weight = 1, ConnectionType type= ConnectionType.Normal)
-        {
-            PetriConnection c = new PetriConnection(slotsList[slotID],transitionsList[transitionID],true,weight,type);
-            transitionsList[transitionID].outputs.Add(c);
-            connectionsList.Add(c);
         }
         
         public void AddTokensToSlot(int slotID, int tokensAmount)

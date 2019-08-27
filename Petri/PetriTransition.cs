@@ -16,6 +16,8 @@ namespace Petri
         public PetriTransition(int transId,string transName)
         {
             id = transId; name = transName;
+            inputs = new List<PetriConnection>();
+            outputs = new List<PetriConnection>();
         }
 
     }
