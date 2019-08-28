@@ -11,6 +11,8 @@ namespace Petri
     {
 
         public List<string> log;
+        int logID;
+        public List<string> actionsLog;
         public string listStr;
         private List<PetriSlot> slotsList;
         private List<PetriConnection> connectionsList;
@@ -23,16 +25,73 @@ namespace Petri
             transitionsList = new List<PetriTransition>();
             log = new List<string>();
             listStr = "";
+            logID = 0;
         }
         
         public void UpdateLogs(string _log)
         {
-            if (log.ToArray().Length == 3)
-            {
-                log.RemoveAt(0);
-            }
-            log.Add(_log);
+            log.Add("["+logID+"] " + _log);
+            logID++;
         }
+        
+
+        #region RUNNING
+        public bool Run()
+        {
+            bool somethingHappened = false;
+            foreach (PetriTransition transition in transitionsList)
+            {
+                bool enabled = true;
+                foreach (PetriConnection inputConnection in transition.inputs)
+                {
+                    PetriSlot slot = slotsList[inputConnection.s];
+                    if (slot.tokens < inputConnection.weight)
+                    {
+                        enabled = false;
+                        break;
+                    }
+                }
+
+                if (enabled)
+                {
+                    foreach (PetriConnection inputConnection in transition.inputs)
+                    {
+                        PetriSlot slot = slotsList[inputConnection.s];
+                        RemoveTokensFromSlot(inputConnection.s,inputConnection.weight);
+                        UpdateLogs("Taking " + inputConnection.weight + " tokens from slot [" + slot.name + "(" + slot.id + ")]");
+                        somethingHappened = true;
+                    }
+
+                    foreach (PetriConnection outputConnection in transition.outputs)
+                    {
+                        PetriSlot slot = slotsList[outputConnection.s];
+                        AddTokensToSlot(outputConnection.s,outputConnection.weight);
+                        UpdateLogs("Gave " + outputConnection.weight + " tokens to slot [" + slot.name + "(" + slot.id + ")]");
+                        somethingHappened = true;
+                    }
+                }
+            }
+
+
+
+            if(!somethingHappened)
+            {
+                UpdateLogs("No available transitions");
+            }
+            return somethingHappened;
+        }
+        
+            public void RunAll()
+            {
+                bool isRunning = true;
+
+                while(isRunning)
+                {
+                     isRunning = Run();
+                }
+            UpdateLogs("Finished");
+            }
+#endregion
 
         #region LISTING
         public void ListConnections()
@@ -157,6 +216,7 @@ namespace Petri
 
             PetriConnection c = new PetriConnection(connectionsList.ToArray().Length,slotID,transID,false,weight,type);
             transitionsList[transID].inputs.Add(c);
+            slotsList[slotID].outputs.Add(c);
             connectionsList.Add(c);
 
             
@@ -213,6 +273,7 @@ namespace Petri
 
             PetriConnection c = new PetriConnection(connectionsList.ToArray().Length,slotID,transID,true,weight,type);
             transitionsList[transID].outputs.Add(c);
+            slotsList[slotID].inputs.Add(c);
             connectionsList.Add(c);
 
             PetriTransition trans = transitionsList[transID];
@@ -261,6 +322,30 @@ namespace Petri
         #endregion
 
         #region TOKENS
+
+        public void AddTokenManually()
+        {
+
+            Console.WriteLine("=====");
+            ListSlots();
+            Console.WriteLine("=====");
+            
+            Console.Write("Slot's ID: ");
+            if (!Int32.TryParse(Console.ReadLine(),out int slotID))
+                return;
+
+            Console.Write("Tokens to add: ");
+            if (!Int32.TryParse(Console.ReadLine(),out int amount))
+                return;
+
+            AddTokensToSlot(slotID,amount);
+
+            string l = "Gave " + amount + " tokens from the slot [" + slotsList[slotID].name + "(" + slotID + ")";
+            UpdateLogs(l);
+            listStr = "";
+        }
+
+
         public void AddTokensToSlot(int slotID, int tokensAmount)
         {
             slotsList[slotID].AddTokens(tokensAmount);

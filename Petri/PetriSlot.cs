@@ -11,6 +11,9 @@ namespace Petri
         public int id;
         public string name;
         public int tokens;
+        
+        public List<PetriConnection> inputs;
+        public List<PetriConnection> outputs;
 
         public PetriSlot(int slotID,string slotName,int slotTokens = 0)
         {
