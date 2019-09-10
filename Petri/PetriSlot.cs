@@ -20,6 +20,8 @@ namespace Petri
             id = slotID;
             name = slotName;
             tokens = slotTokens;
+            inputs = new List<PetriConnection>();
+            outputs = new List<PetriConnection>();
         }
 
         public void AddTokens(int amount)

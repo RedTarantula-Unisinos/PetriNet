@@ -142,32 +142,51 @@ namespace Petri
             string inputType;
             ConnectionType type = ConnectionType.Normal;
 
-            Console.WriteLine("=====");
-            ListSlots();
-            Console.WriteLine("=====");
-
-            Console.Write("Slot's ID: ");
-            Int32.TryParse(Console.ReadLine(),out slotID);
-
-            if (slotID < 0)
+            bool testing = false;
+            while (testing == false)
             {
-                Console.WriteLine("Failed");
-                return;
+                Console.WriteLine("=====");
+                ListSlots();
+                Console.WriteLine("=====");
+
+                Console.Write("Slot's ID: ");
+                Int32.TryParse(Console.ReadLine(),out slotID);
+
+                if (slotID < 0 || slotID >= slotsList.ToArray().Length)
+                {
+                    Console.WriteLine("Failed");
+                }
+                else
+                {
+                    testing = true;
+                }
+
+                
             }
 
+            testing = false;
 
-            Console.WriteLine("=====");
-            ListTransitions();
-            Console.WriteLine("=====");
-
-            Console.Write("Transition's ID: ");
-            Int32.TryParse(Console.ReadLine(),out transID);
-
-            if (transID < 0)
+            while (testing == false)
             {
-                Console.WriteLine("Failed");
-                return;
+
+                Console.WriteLine("=====");
+                ListTransitions();
+                Console.WriteLine("=====");
+
+                Console.Write("Transition's ID: ");
+                Int32.TryParse(Console.ReadLine(),out transID);
+                if (transID < 0 || transID >= transitionsList.ToArray().Length)
+                {
+                    Console.WriteLine("Failed");
+                }
+                else
+                {
+                    testing = true;
+                }
+
             }
+            testing = false;
+            
 
             Console.Write("Connection's Weight: ");
             Int32.TryParse(Console.ReadLine(),out weight);
@@ -185,10 +204,9 @@ namespace Petri
             Console.WriteLine("- Inhibitor");
             Console.WriteLine("- Reset");
             Console.WriteLine("=====");
+            
 
-            bool acceptable = false;
-
-            while (!acceptable)
+            while (!testing)
             {
                 Console.Write("Connection Type: ");
                 inputType = Console.ReadLine().ToLower();
@@ -196,17 +214,17 @@ namespace Petri
                 if (inputType == "normal" || inputType == "n")
                 {
                     type = ConnectionType.Normal;
-                    acceptable = true;
+                    testing = true;
                 }
                 else if (inputType == "inhibitor" || inputType == "i")
                 {
                     type = ConnectionType.Inhibitor;
-                    acceptable = true;
+                    testing = true;
                 }
                 else if (inputType == "reset" || inputType == "r")
                 {
                     type = ConnectionType.Reset;
-                    acceptable = true;
+                    testing = true;
                 }
                 else
                 {

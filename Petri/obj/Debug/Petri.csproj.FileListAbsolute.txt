@@ -11,3 +11,10 @@ C:\Users\joaopedrosr\Desktop\PetriNet-master\Petri\obj\Debug\Petri.csprojResolve
 C:\Users\joaopedrosr\Desktop\PetriNet-master\Petri\obj\Debug\Petri.csproj.CoreCompileInputs.cache
 C:\Users\joaopedrosr\Desktop\PetriNet-master\Petri\obj\Debug\Petri.exe
 C:\Users\joaopedrosr\Desktop\PetriNet-master\Petri\obj\Debug\Petri.pdb
+C:\Users\joaopedrosr\Desktop\PetriNet\Petri\bin\Debug\Petri.exe.config
+C:\Users\joaopedrosr\Desktop\PetriNet\Petri\bin\Debug\Petri.exe
+C:\Users\joaopedrosr\Desktop\PetriNet\Petri\bin\Debug\Petri.pdb
+C:\Users\joaopedrosr\Desktop\PetriNet\Petri\obj\Debug\Petri.csprojResolveAssemblyReference.cache
+C:\Users\joaopedrosr\Desktop\PetriNet\Petri\obj\Debug\Petri.csproj.CoreCompileInputs.cache
+C:\Users\joaopedrosr\Desktop\PetriNet\Petri\obj\Debug\Petri.exe
+C:\Users\joaopedrosr\Desktop\PetriNet\Petri\obj\Debug\Petri.pdb
