@@ -33,14 +33,27 @@ namespace Petri
                 Console.WriteLine("ConnectSlotToTransition: Connects slot to a transition; Alias: cst");
                 Console.WriteLine("ConnectTransitionToSlot: Connects a transition to a slot; Alias: cts");
                 Console.WriteLine("ListConnections: Lists all existing connections; Alias: lc \n");
-                Console.WriteLine("ListAll: Lists everything; Alias: l \n");
+                Console.WriteLine("ListAll: Lists everything; Alias: la ");
+                Console.WriteLine("Logs: Lists all logs; Alias: lg \n");
                 Console.WriteLine("Exit: Exits the program; Alias: x");
                 Console.WriteLine("=====");
                 Console.WriteLine("HISTORY\n");
-                for (int i = 0 ; i < 5 && i < p.log.ToArray().Length ; i++)
+                if (!p.allLogs)
                 {
-                    Console.WriteLine(p.log[p.log.ToArray().Length-1-i]);
-                    
+
+                    for (int i = 0 ; i < 5 && i < p.log.ToArray().Length ; i++)
+                    {
+                        Console.WriteLine(p.log[p.log.ToArray().Length - 1 - i]);
+
+                    }
+                }
+                else
+                {
+                    foreach (string log in p.log)
+                    {
+                        Console.WriteLine(log);
+                    }
+                    p.allLogs = false;
                 }
                 Console.WriteLine("=====");
 
@@ -77,11 +90,16 @@ namespace Petri
                 else if (input == "listconnections" || input == "lc")
                     p.ListConnections();
 
-                else if (input == "listall" || input == "l")
+                else if (input == "listall" || input == "la")
                 {
                     p.ListSlots();
                     p.ListTransitions();
                     p.ListConnections();
+                }
+
+                else if (input == "logs" || input == "lg")
+                {
+                    p.allLogs = true;
                 }
 
                 else if (input == "exit" || input == "x")

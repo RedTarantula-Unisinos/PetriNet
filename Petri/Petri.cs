@@ -17,6 +17,7 @@ namespace Petri
         private List<PetriSlot> slotsList;
         private List<PetriConnection> connectionsList;
         private List<PetriTransition> transitionsList;
+        public bool allLogs = false;
 
         public Petri() // Constructor
         {
@@ -45,7 +46,7 @@ namespace Petri
                 foreach (PetriConnection inputConnection in transition.inputs)
                 {
                     PetriSlot slot = slotsList[inputConnection.s];
-                    if (slot.tokens < inputConnection.weight)
+                    if ((slot.tokens < inputConnection.weight && inputConnection.type != ConnectionType.Inhibitor)||(slot.tokens > 0 && inputConnection.type == ConnectionType.Inhibitor))
                     {
                         enabled = false;
                         break;
@@ -56,8 +57,16 @@ namespace Petri
                 {
                     foreach (PetriConnection inputConnection in transition.inputs)
                     {
+                        
                         PetriSlot slot = slotsList[inputConnection.s];
-                        RemoveTokensFromSlot(inputConnection.s,inputConnection.weight);
+                        if (inputConnection.type != ConnectionType.Inhibitor)
+                        {
+                            RemoveTokensFromSlot(inputConnection.s,inputConnection.weight);
+                        }
+                        else if (inputConnection.type == ConnectionType.Reset)
+                        {
+                            RemoveTokensFromSlot(inputConnection.s,slotsList[inputConnection.s].tokens);
+                        }
                         UpdateLogs("Taking " + inputConnection.weight + " tokens from slot [" + slot.name + "(" + slot.id + ")]");
                         somethingHappened = true;
                     }
@@ -80,17 +89,18 @@ namespace Petri
             }
             return somethingHappened;
         }
-        
-            public void RunAll()
-            {
-                bool isRunning = true;
 
-                while(isRunning)
-                {
-                     isRunning = Run();
-                }
-            UpdateLogs("Finished");
+        public void RunAll()
+        {
+            bool isRunning = true;
+            int timesRun = 0;
+            while (isRunning && timesRun < 100)
+            {
+                isRunning = Run();
+                timesRun++;
             }
+            UpdateLogs("Finished - Ran " + timesRun + " times");
+        }
 #endregion
 
         #region LISTING
@@ -187,11 +197,7 @@ namespace Petri
             }
             testing = false;
             
-
-            Console.Write("Connection's Weight: ");
-            Int32.TryParse(Console.ReadLine(),out weight);
-
-            if (weight < 0)
+             if (weight < 0)
             {
                 Console.WriteLine("Forcing value of 1 to the connection");
                 weight = 1;
@@ -231,6 +237,18 @@ namespace Petri
                     Console.WriteLine("Incorrect type");
                 }
             }
+
+            if (type == ConnectionType.Normal)
+            {
+                Console.Write("Connection's Weight: ");
+                Int32.TryParse(Console.ReadLine(),out weight);
+            }
+            else
+            {
+                weight = 0;
+            }
+
+           
 
             PetriConnection c = new PetriConnection(connectionsList.ToArray().Length,slotID,transID,false,weight,type);
             transitionsList[transID].inputs.Add(c);
