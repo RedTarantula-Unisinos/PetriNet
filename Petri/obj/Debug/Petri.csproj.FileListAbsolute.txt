@@ -18,3 +18,9 @@ C:\Users\joaopedrosr\Desktop\PetriNet\Petri\obj\Debug\Petri.csprojResolveAssembl
 C:\Users\joaopedrosr\Desktop\PetriNet\Petri\obj\Debug\Petri.csproj.CoreCompileInputs.cache
 C:\Users\joaopedrosr\Desktop\PetriNet\Petri\obj\Debug\Petri.exe
 C:\Users\joaopedrosr\Desktop\PetriNet\Petri\obj\Debug\Petri.pdb
+D:\Users\Pedro\Desktop\PetriNet\Petri\bin\Debug\Petri.exe.config
+D:\Users\Pedro\Desktop\PetriNet\Petri\obj\Debug\Petri.exe
+D:\Users\Pedro\Desktop\PetriNet\Petri\obj\Debug\Petri.pdb
+D:\Users\Pedro\Desktop\PetriNet\Petri\bin\Debug\Petri.exe
+D:\Users\Pedro\Desktop\PetriNet\Petri\bin\Debug\Petri.pdb
+D:\Users\Pedro\Desktop\PetriNet\Petri\obj\Debug\Petri.csprojResolveAssemblyReference.cache

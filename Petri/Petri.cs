@@ -34,7 +34,6 @@ namespace Petri
             log.Add("["+logID+"] " + _log);
             logID++;
         }
-        
 
         #region RUNNING
         public bool Run()
@@ -143,7 +142,7 @@ namespace Petri
         }
         #endregion
 
-        #region CREATING
+        #region CREATING MANUALLY
         public void CreateConnectionSTLoop()
         {
             int slotID = 0;
@@ -151,7 +150,7 @@ namespace Petri
             int weight = 1;
             string inputType;
             ConnectionType type = ConnectionType.Normal;
-
+            
             bool testing = false;
             while (testing == false)
             {
@@ -356,31 +355,156 @@ namespace Petri
             UpdateLogs(l);
         }
         #endregion
+       
+        #region CREATING AUTOMATICALLY
+        public void CreateConnectionST(int slot, int transition, int w = 1, ConnectionType ctype = ConnectionType.Normal)
+        {
+            int slotID = slot;
+            int transID = transition;
+            int weight = w;
+            ConnectionType type = ctype;
+            
+
+            PetriConnection c = new PetriConnection(connectionsList.ToArray().Length,slotID,transID,false,weight,type);
+            transitionsList[transID].inputs.Add(c);
+            slotsList[slotID].outputs.Add(c);
+            connectionsList.Add(c);
+
+            
+            PetriTransition trans = transitionsList[transID];
+            PetriSlot petriSlot = slotsList[slotID];
+            string l = "Created a connection from the slot [" + petriSlot.name + "(" + petriSlot.id + ")" + "] to the transition [" + trans.name + "(" + trans.id + ")]" + "Id: " + c.id;;
+            UpdateLogs(l);
+            listStr = "";
+        }
+        public void CreateConnectionTS(int slot, int transition, int w = 1)
+        {
+            int slotID = slot;
+            int transID = transition;
+            int weight = w;
+            ConnectionType type = ConnectionType.Normal;
+
+            PetriConnection c = new PetriConnection(connectionsList.ToArray().Length,slotID,transID,true,weight,type);
+            transitionsList[transID].outputs.Add(c);
+            slotsList[slotID].inputs.Add(c);
+            connectionsList.Add(c);
+
+            PetriTransition trans = transitionsList[transID];
+            PetriSlot pslot = slotsList[slotID];
+            string l = "Created a connection from the transition [" + trans.name + "(" + trans.id + ")" + "] to the slot [" + pslot.name + "(" + pslot.id + ")]" + "Id: " + c.id;
+            UpdateLogs(l);
+            listStr = "";
+
+        }
+        public void CreateSlot(string slotName,int slotTokens)
+        {
+            string name = slotName;
+
+
+            PetriSlot s = new PetriSlot(slotsList.ToArray().Length,name);
+            slotsList.Add(s);
+
+
+            int id = slotsList.ToArray().Length - 1;
+            int tokens = slotTokens;
+            if (tokens >= 0)
+            {
+                AddTokensToSlot(id,tokens);
+            }
+
+
+
+            string l = "Created a slot. Id: " + id + "; Name: " + name + "; Tokens: " + tokens + ";";
+            UpdateLogs(l);
+        }
+        public void CreateTransition(string transName)
+        {
+            string name = transName;
+            
+            PetriTransition t = new PetriTransition(transitionsList.ToArray().Length,name);
+            transitionsList.Add(t);
+            
+            string l = "Created a transition. Id: " + (transitionsList.ToArray().Length-1) + "; Name: " + name + ";";
+            UpdateLogs(l);
+        }
+        #endregion
 
         #region TOKENS
 
         public void AddTokenManually()
         {
 
+            int slotID = 0;
+            int amount = 0;
+
             Console.WriteLine("=====");
             ListSlots();
             Console.WriteLine("=====");
             
             Console.Write("Slot's ID: ");
-            if (!Int32.TryParse(Console.ReadLine(),out int slotID))
+            if (!Int32.TryParse(Console.ReadLine(),out slotID))
                 return;
 
             Console.Write("Tokens to add: ");
-            if (!Int32.TryParse(Console.ReadLine(),out int amount))
+            if (!Int32.TryParse(Console.ReadLine(),out amount))
                 return;
 
             AddTokensToSlot(slotID,amount);
 
-            string l = "Gave " + amount + " tokens from the slot [" + slotsList[slotID].name + "(" + slotID + ")";
+            string l = "Gave " + amount + " tokens to the slot [" + slotsList[slotID].name + "(" + slotID + ")]";
             UpdateLogs(l);
             listStr = "";
         }
 
+        public void RemoveTokenManually()
+        {
+
+            int slotID = 0;
+            int amount = 0;
+
+            Console.WriteLine("=====");
+            ListSlots();
+            Console.WriteLine("=====");
+            
+            Console.Write("Slot's ID: ");
+            if (!Int32.TryParse(Console.ReadLine(),out slotID))
+                return;
+
+            Console.Write("Tokens to remove: ");
+            if (!Int32.TryParse(Console.ReadLine(),out amount))
+                return;
+
+            if(amount > slotsList[slotID].tokens)
+            {
+                amount = slotsList[slotID].tokens;
+            }
+
+            RemoveTokensFromSlot(slotID,amount);
+
+            string l = "Took " + amount + " tokens from the slot [" + slotsList[slotID].name + "(" + slotID + ")]";
+            UpdateLogs(l);
+            listStr = "";
+        }
+        public void ClearTokensManually()
+        {
+            int slotID = 0;
+
+            Console.WriteLine("=====");
+            ListSlots();
+            Console.WriteLine("=====");
+            
+            Console.Write("Slot's ID: ");
+            if (!Int32.TryParse(Console.ReadLine(),out slotID))
+                return;
+
+            int amount = slotsList[slotID].tokens;
+
+            RemoveTokensFromSlot(slotID,amount);
+
+            string l = "Took " + amount + " tokens from the slot [" + slotsList[slotID].name + "(" + slotID + ")]";
+            UpdateLogs(l);
+            listStr = "";
+        }
 
         public void AddTokensToSlot(int slotID, int tokensAmount)
         {

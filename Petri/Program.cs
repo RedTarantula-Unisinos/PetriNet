@@ -12,6 +12,7 @@ namespace Petri
         {
 
             Petri p = new Petri();
+            SampleNet sn = new SampleNet();
             bool exit = false;
 
             while (exit == false)
@@ -27,7 +28,9 @@ namespace Petri
                 Console.WriteLine("RunAll: Runs until transitions are all disabled; Alias: ra\n");
                 Console.WriteLine("CreateSlot: Creates a new slot; Alias: cs ");
                 Console.WriteLine("ListSlots: Lists all existing slots; Alias: ls \n");
-                Console.WriteLine("AddTokens: Adds tokens to a slot; Alias: at \n");
+                Console.WriteLine("AddTokens: Adds tokens to a slot; Alias: at");
+                Console.WriteLine("RemoveTokens: Removes tokens to a slot; Alias: rt \n");
+                Console.WriteLine("ClearTokens: Removes all tokens to a slot; Alias: crt \n");
                 Console.WriteLine("CreateTransition: Creates a new transition; Alias: ct");
                 Console.WriteLine("ListTransitions: Lists all existing transitions; Alias: lt \n");
                 Console.WriteLine("ConnectSlotToTransition: Connects slot to a transition; Alias: cst");
@@ -35,6 +38,10 @@ namespace Petri
                 Console.WriteLine("ListConnections: Lists all existing connections; Alias: lc \n");
                 Console.WriteLine("ListAll: Lists everything; Alias: la ");
                 Console.WriteLine("Logs: Lists all logs; Alias: lg \n");
+                
+                Console.WriteLine("GrauA: Builds Grau A's sample; Alias: ga");
+                Console.WriteLine("TokensGA: Gives 20 tokens to L1, L2, L3 and L4; Alias: tga");
+                Console.WriteLine("Nuke: Clears everything; Alias: nk");
                 Console.WriteLine("Exit: Exits the program; Alias: x");
                 Console.WriteLine("=====");
                 Console.WriteLine("HISTORY\n");
@@ -77,6 +84,10 @@ namespace Petri
 
                 else if (input == "addtokens" || input == "at")
                     p.AddTokenManually();
+                else if (input == "removetokens" || input == "rt")
+                    p.AddTokenManually();
+                else if (input == "cleartokens" || input == "crt")
+                    p.AddTokenManually();
 
                 else if (input == "createtransition" || input == "ct")
                     p.CreateTransitionLoop();
@@ -101,9 +112,21 @@ namespace Petri
                 {
                     p.allLogs = true;
                 }
+                
+                else if (input == "graua" || input == "ga")
+                    sn.BuildGA(p);
+                else if (input == "tokensta" || input == "tga")
+                    sn.GATokens(p);
+
+                else if (input == "nuke" || input == "nk")
+                {
+                    p = new Petri();
+                    sn = new SampleNet();
+                }
 
                 else if (input == "exit" || input == "x")
                     exit = true;
+
 
                 else
                     p.listStr = "(!)INVALID COMMAND(!)";
