@@ -40,7 +40,11 @@ namespace Petri
                 Console.WriteLine("Logs: Lists all logs; Alias: lg \n");
                 
                 Console.WriteLine("GrauA: Builds Grau A's sample; Alias: ga");
-                Console.WriteLine("TokensGA: Gives 20 tokens to L1, L2, L3 and L4; Alias: tga");
+                Console.WriteLine("TokensGA: Gives 20 tokens to L1, L2, L3 and L4; Alias: tga\n");
+
+                Console.WriteLine("Project: Builds Project's sample; Alias: pj");
+                Console.WriteLine("TokensProject: Spawns some things for the project's net; Alias: tpj\n");
+
                 Console.WriteLine("Nuke: Clears everything; Alias: nk");
                 Console.WriteLine("Exit: Exits the program; Alias: x");
                 Console.WriteLine("=====");
@@ -115,8 +119,13 @@ namespace Petri
                 
                 else if (input == "graua" || input == "ga")
                     sn.BuildGA(p);
-                else if (input == "tokensta" || input == "tga")
+                else if (input == "tokensga" || input == "tga")
                     sn.GATokens(p);
+
+                else if (input == "project" || input == "pj")
+                    sn.EvolexNet(p);
+                else if (input == "tokensproject" || input == "tpj")
+                    sn.EvolexTokens(p);
 
                 else if (input == "nuke" || input == "nk")
                 {

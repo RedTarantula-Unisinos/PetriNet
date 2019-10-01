@@ -8,13 +8,18 @@ namespace Petri
 {
     class SampleNet
     {
-        bool GA;
+        bool GA, PROJECT;
 
-        public SampleNet() { GA = false; } // Constructor
+        public SampleNet() { GA = false; PROJECT = false; } // Constructor
       
 
         public void BuildGA(Petri p)
         {
+            if(PROJECT)
+            {
+                p.UpdateLogs("Couldn't set GrauA up, because Project is already active");
+                return;
+            }
             p.CreateSlot("L1",0); // 0
             p.CreateSlot("L2",0); // 1
             p.CreateSlot("L3",0); // 2
@@ -61,6 +66,70 @@ namespace Petri
             }
         }
 
+        public void EvolexNet(Petri p)
+        {
+            if(GA)
+            {
+                p.UpdateLogs("Couldn't set Project up, because GrauA is already active");
+                return;
+            }
+            p.CreateSlot("Carnivore Creatures",0); // 0
+            p.CreateSlot("Herbivore Creatures",0); // 1
+            p.CreateSlot("Prey",0); // 2
+            p.CreateSlot("Fruit Trees",0); // 3
+            p.CreateSlot("Available Fruit",0); // 4
+            p.CreateSlot("Targeted Fruit",0); // 5
 
+            p.CreateTransition("Look For Prey"); // 0
+            p.CreateTransition("Look For Fruit"); // 1
+            p.CreateTransition("Move On (Carnivore)"); // 2
+            p.CreateTransition("Attempt Escape (Herbivore)"); // 3
+            p.CreateTransition("Spawn Fruits"); // 4
+            p.CreateTransition("Hunt Prey"); // 5
+            p.CreateTransition("Eat Fruit"); // 6
+
+            p.CreateConnectionST(0,0); // Carnivore Creature to Look For Prey
+            p.CreateConnectionST(0,2); // Carnivore Creature to Idle (Carnivore)
+            p.CreateConnectionST(1,0); // Herbivore Creature to Look For Prey
+            p.CreateConnectionST(1,2,1,ConnectionType.Inhibitor); // Herbivore Creature to Move On (Carnivore) - Inhibitor
+            p.CreateConnectionST(1,1); // Herbivore Creature to Look For Fruit
+            p.CreateConnectionST(1,3); // Herbivore Creature to Attempt Escape (Herbivore)
+            p.CreateConnectionST(3,4,2); // Fruit Trees to Spawn Fruits - Weight 2
+            p.CreateConnectionST(4,1); // Available Fruit to Look For Fruit
+            p.CreateConnectionST(4,3,1,ConnectionType.Inhibitor); // Available Fruit to Attempt Escape (Herbivore) - Inhibitor
+            p.CreateConnectionST(2,5); // Prey to Hunt Prey
+            p.CreateConnectionST(5,6); // Targeted Fruit to Eat Fruit
+
+            p.CreateConnectionTS(2,0); // Look For Prey to Prey
+            p.CreateConnectionTS(0,5); // Hunt Prey to Carnivore Creatures
+            p.CreateConnectionTS(4,4,5); // Spawn Fruits to Available Fruits - Weight 5
+            p.CreateConnectionTS(3,4); // Spawn Fruits to Fruit Trees
+            p.CreateConnectionTS(5,1); // Look For Fruit to Targeted Fruit
+            p.CreateConnectionTS(1,6); // Eat Fruit to Herbivore Creatures
+
+            PROJECT = true;
+        }
+
+        public void EvolexTokens(Petri p)
+        {
+            if (PROJECT)
+            {
+                p.AddTokensToSlot(1,25);
+                p.AddTokensToSlot(0,2);
+                p.AddTokensToSlot(3,20);
+                p.AddTokensToSlot(4,100);
+
+                p.UpdateLogs("Spawning 25 herbivore creatures");
+                p.UpdateLogs("Spawning 2 carnivore creatures");
+                p.UpdateLogs("Spawning 20 fruit trees");
+                p.UpdateLogs("Spawning 100 available fruits");
+                    
+                p.listStr = "";
+            }
+            else
+            {
+                p.UpdateLogs("Couldn't add tokens, because the Project net isn't active. Use the 'Project' command first to set it up");
+            }
+        }
     }
 }
