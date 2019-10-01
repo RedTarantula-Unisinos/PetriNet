@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 namespace Petri
 {
     
+    /*
+    The priority of the connection depends on the order it was created;
+
+    A connection that was created first will always execute first,
+    this is important to take into consideration in case there are concurrences
+    */
+
         public enum ConnectionType
         {
             Normal,
