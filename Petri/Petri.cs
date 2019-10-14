@@ -39,42 +39,42 @@ namespace Petri
         public bool Run()
         {
             bool somethingHappened = false;
-            foreach (PetriTransition transition in transitionsList)
+            foreach (PetriTransition transition in transitionsList) // For each transition that there is
             {
                 bool enabled = true;
-                foreach (PetriConnection inputConnection in transition.inputs)
+                foreach (PetriConnection inputConnection in transition.inputs) // Check for input connections 
                 {
                     PetriSlot slot = slotsList[inputConnection.s];
                     if ((slot.tokens < inputConnection.weight && inputConnection.type != ConnectionType.Inhibitor)||(slot.tokens > 0 && inputConnection.type == ConnectionType.Inhibitor))
                     {
-                        enabled = false;
+                        enabled = false; // If conditions are satisfied, enable the transition
                         break;
                     }
                 }
 
-                if (enabled)
+                if (enabled) // If the transition's enabled
                 {
-                    foreach (PetriConnection inputConnection in transition.inputs)
+                    foreach (PetriConnection inputConnection in transition.inputs) // Get each input
                     {
                         
-                        PetriSlot slot = slotsList[inputConnection.s];
+                        PetriSlot slot = slotsList[inputConnection.s]; // Reach for their slot
                         if (inputConnection.type != ConnectionType.Inhibitor)
                         {
-                            RemoveTokensFromSlot(inputConnection.s,inputConnection.weight);
+                            RemoveTokensFromSlot(inputConnection.s,inputConnection.weight); // In case it's a normal or reset connection, remove some tokens from the slot
                         }
                         else if (inputConnection.type == ConnectionType.Reset)
                         {
-                            RemoveTokensFromSlot(inputConnection.s,slotsList[inputConnection.s].tokens);
+                            RemoveTokensFromSlot(inputConnection.s,slotsList[inputConnection.s].tokens); // If it's a reset connection, remove all tokens
                         }
-                        UpdateLogs("Taking " + inputConnection.weight + " tokens from slot [" + slot.name + "(" + slot.id + ")]");
+                        UpdateLogs("Taking " + inputConnection.weight + " tokens from slot [" + slot.name + "(" + slot.id + ")]"); // Log what happened
                         somethingHappened = true;
                     }
 
-                    foreach (PetriConnection outputConnection in transition.outputs)
+                    foreach (PetriConnection outputConnection in transition.outputs) // Get each output
                     {
-                        PetriSlot slot = slotsList[outputConnection.s];
-                        AddTokensToSlot(outputConnection.s,outputConnection.weight);
-                        UpdateLogs("Gave " + outputConnection.weight + " tokens to slot [" + slot.name + "(" + slot.id + ")]");
+                        PetriSlot slot = slotsList[outputConnection.s]; // Reach for their slot
+                        AddTokensToSlot(outputConnection.s,outputConnection.weight); // Give tokens to it
+                        UpdateLogs("Gave " + outputConnection.weight + " tokens to slot [" + slot.name + "(" + slot.id + ")]"); // Log what happened
                         somethingHappened = true;
                     }
                 }
@@ -82,7 +82,7 @@ namespace Petri
 
 
 
-            if(!somethingHappened)
+            if(!somethingHappened) // If nothing happened at all, stop the loop since there are no available transitions
             {
                 UpdateLogs("No available transitions");
             }
